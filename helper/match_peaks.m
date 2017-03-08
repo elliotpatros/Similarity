@@ -25,9 +25,18 @@ for n = 1:nPeaks1
     % if the kth peak hasn't been matched yet, save the connection in M
     if isempty(M(M(:,2)==locs2(bestMatch(1))))
         total_distance = total_distance + bestMatch(2);
-%         M(n,:) = [locs1(n), locs2(bestMatch(1))];
+        M(n,:) = [locs1(n), locs2(bestMatch(1))];
     end
 end
+
+% get average distance
+div = length(M(M(:,1)~=0));
+if (div > 0)
+    total_distance = total_distance / div;
+else
+    total_distance = 999999;
+end
+
 
 % delete non-connections
 % M(M(:,1)==0 & M(:,2)==0, :) = [];
