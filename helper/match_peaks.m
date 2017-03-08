@@ -1,7 +1,7 @@
-L = 50;
+function total_distance = match_peaks(Y1, Y2)
 
-Y1 = rand(L, 1);
-Y2 = rand(L, 1);
+L = length(Y1);
+total_distance = 0;
 
 [p1, locs1] = findpeaks(Y1, 'SortStr', 'descend');
 [p2, locs2] = findpeaks(Y2);
@@ -24,21 +24,14 @@ for n = 1:nPeaks1
 
     % if the kth peak hasn't been matched yet, save the connection in M
     if isempty(M(M(:,2)==locs2(bestMatch(1))))
-        M(n,:) = [locs1(n), locs2(bestMatch(1))];
+        total_distance = total_distance + bestMatch(2);
+%         M(n,:) = [locs1(n), locs2(bestMatch(1))];
     end
 end
 
 % delete non-connections
-M(M(:,1)==0 & M(:,2)==0, :) = [];
+% M(M(:,1)==0 & M(:,2)==0, :) = [];
 
-plot3(1:L, zeros(1,L), Y1); % plot Y1
-hold on;
-plot3(1:L, ones(1,L), Y2);  % plot Y2
-plot3(M(:,1), zeros(1,length(M)), Y1(M(:,1)), 'k.'); % plot peaks
-plot3(M(:,2), ones(1, length(M)), Y2(M(:,2)), 'k.'); % plot peaks
-for n = 1:length(M)
-    plot3(M(n,:), [0 1], [Y1(M(n,1)), Y2(M(n,2))], 'k-'); % plot connections
+
 end
-hold off;
-
 
