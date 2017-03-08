@@ -45,8 +45,7 @@ h = waitbar(0, 'progress');
 end
 for n = 1:nGrains
     % get nth target grain (grain that we're trying to recreate)
-    tin = (n - 1) * hop + 1;
-    tout = tin + win - 1;
+    [tin, tout] = nth_pointer(n, win, hop);
     tgrain = target(tin:tout);
     tgrain = tgrain .* hwin;
     
