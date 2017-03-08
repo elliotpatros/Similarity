@@ -12,7 +12,8 @@ source_filename = 'voice1.wav'; % sound we're making target from
 %% interface
 show_progressbar = false;
 plot_progress = true;
-play_result = false;
+play_result = true;
+plot_result = true;
 
 %% load resources
 [target, fs] = audioread(['./sources/', target_filename]);
@@ -50,7 +51,7 @@ for n = 1:nGrains
     tgrain = tgrain .* hwin;
     
     % find best grain
-    sin = morph(tgrain, source); %xcorr_1(tgrain, source);
+    sin = naive_morph(tgrain, source); %xcorr_1(tgrain, source);
     sout = sin + win - 1;
     sgrain = source(sin:sout);
     sgrain = sgrain .* hwin;
@@ -73,6 +74,7 @@ for n = 1:nGrains
         source_progress = zeros(size(source));
         source_progress(sin:sout) = sgrain;
         plot([source source_progress]);
+        title([num2str(n), ' of ', num2str(nGrains)]);
         drawnow;
     end
 
@@ -85,6 +87,9 @@ if show_progressbar
 end
 
 %% display results
+if plot_result
+    plot([y target])
+end
 if play_result
     soundsc(y, fs);
 end
