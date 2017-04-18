@@ -3,7 +3,7 @@ clc;
 addpath(genpath('.'));
 
 %% user parameters
-win = 512;  % window size (samples)
+win = 4096;  % window size (samples)
 overlap = 2; % hop size == Lwin / overlap
 
 target_filename = 'voice2.wav'; % sound we're trying to recreate
@@ -51,7 +51,7 @@ for n = 1:nGrains
     tgrain = tgrain .* hwin;
     
     % find best grain
-    sin = morph(tgrain, source); %naive_morph(tgrain, source); %xcorr_1(tgrain, source);
+    sin = morph(tgrain, source); %naive_morph(tgrain, source); %xcorr_1(tgrain, source); %
     sout = sin + win - 1;
     sgrain = source(sin:sout);
     sgrain = sgrain .* hwin;

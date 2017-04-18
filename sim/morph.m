@@ -10,7 +10,7 @@ Ygrain = Ygrain(1:end/2+1);
 bestFitIndex = 0;
 bestFitValue = 999999;
 
-hop = Lgrain/2;
+hop = Lgrain/4;
 nGrains = windows_in_length(Lsource, Lgrain, hop);
 
 for n = 1:nGrains
