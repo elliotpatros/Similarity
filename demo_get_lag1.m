@@ -8,40 +8,49 @@ target_file = 'voice1.wav';     % the sound we're trying to recreate
 source_file = 'voice1.wav';     % the sound we're making the target out of
 
 %% setup
-x = rand(100, 1);
-y = x(1:10);
+% nT = ((0:101)/100)';
+x = rand(1000, 1); %zeros(10, 1); %sin(2*pi*2.1*nT); % 
+y = x(1:10); %zeros(6, 1); %cos(2*pi*2*nT); % 
+% x(4) = 1;
+% y(1) = 1;
 
 x_len = length(x);
 y_len = length(y);
-[min_len, shorter] = min([x_len, y_len]);
-max_len = max([x_len, y_len]);
-n_frames = (max_len - min_len) + 1;
-
-if 1 == shorter
-    x_hat = x;
-    y_hat = y;
-else
-    x_hat = y;
-    y_hat = x;
-end
-
+n_frames = x_len + y_len - 1;
 rms_vector = zeros(n_frames, 1);
 lag_vector = zeros(n_frames, 1);
 
-
 %% find whatever it is this is called
 for n = 1:n_frames
-    % shift
-    x_shift = x_hat;
-    y_shift = y_hat(n:n+min_len-1);
+    % zero pad
+   shift = n_frames - (n - 1);
+    x_ = zeros(n_frames, 1);
+    y_ = zeros(n_frames, 1);
+    if shift >= y_len
+        y_from = shift - (y_len - 1);
+        y_till = shift;
+        y_(y_from:y_till) = y;
+        
+        x_from = 1;
+        x_till = x_len;
+        x_(x_from:x_till) = x;
+    else
+        y_from = 1;
+        y_till = y_len;
+        y_(y_from:y_till) = y;
+        
+        x_from = y_len - (shift - 1);
+        x_till = x_from + x_len - 1;
+        x_(x_from:x_till) = x;
+    end
     
     % get diff vector
-    rms_vector(n) = rms(x_shift - y_shift);
-    lag_vector(n) = n - 1;
+    rms_vector(n) = rms(x_ - y_);
+    lag_vector(n) = x_from - y_from;
     
     % plot
     subplot(311); 
-    plot([x_shift, y_shift]); 
+    plot([x_, y_]); 
     title('x and y');
     subplot(312); 
     plot(rms_vector(1:n)); 
@@ -50,7 +59,6 @@ for n = 1:n_frames
     plot(lag_vector(1:n));
     title('lag vector');
     drawnow;
-    pause;
 end
 
 % find location where correlation is the greatest

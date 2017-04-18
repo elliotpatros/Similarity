@@ -9,10 +9,10 @@ source_file = 'voice1.wav';     % the sound we're making the target out of
 
 %% setup
 % nT = ((0:101)/100)';
-x = zeros(10, 1); %sin(2*pi*2.1*nT); % 
-y = zeros(6, 1); %cos(2*pi*2*nT); % 
-x(4) = 1;
-y(1) = 1;
+x = rand(1000, 1); %zeros(10, 1); %sin(2*pi*2.1*nT); % 
+y = x(1:10); %zeros(6, 1); %cos(2*pi*2*nT); % 
+% x(4) = 1;
+% y(1) = 1;
 
 x_len = length(x);
 y_len = length(y);
@@ -51,24 +51,21 @@ for n = 1:n_frames
     % plot
     subplot(311); 
     plot([x_, y_]); 
-    axis([1 n_frames 0 1]);
-    title('x_ and y_');
+    title('x and y');
     subplot(312); 
-    plot(rms_vector); 
-    axis([1 n_frames 0 1]);
+    plot(rms_vector(1:n)); 
     title('rms');
     subplot(313);
-    plot(lag_vector);
+    plot(lag_vector(1:n));
     title('lag vector');
-    axis([1 n_frames -n_frames n_frames]);
-    drawnow; 
-    pause;
+    drawnow;
 end
 
 % find location where correlation is the greatest
 [~, idx] = min(rms_vector);
 offset = lag_vector(idx);
 
+figure;
 if offset < 0
     plot(x);
     hold on;

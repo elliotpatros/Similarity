@@ -1,39 +1,44 @@
 function [lag] = get_lag(x, y)
+    
+% check that x and y are mono
+if 1 ~= min(size(x)) || 1 ~= min(size(y))
+    error('x and y must be either scalars or vectors');
+end
+
+% check that x and y are column vectors
+if isrow(x) || isrow(y)
+    error('x and y must be column vectors');
+end
 
 x_len = length(x);
 y_len = length(y);
-n_frames = x_len + y_len - 1;
-rms_vector = zeros(n_frames, 1);
-lag_vector = zeros(n_frames, 1);
-    
-for n = 1:n_frames
-    % shift x against y
-	shift = n_frames - (n - 1);
-    x_ = zeros(n_frames, 1);
-    y_ = zeros(n_frames, 1);
-    if shift >= y_len
-        y_from = shift - (y_len - 1);
-        y_till = shift;
-        y_(y_from:y_till) = y;
-        
-        x_from = 1;
-        x_till = x_len;
-        x_(x_from:x_till) = x;
-    else
-        y_from = 1;
-        y_till = y_len;
-        y_(y_from:y_till) = y;
-        
-        x_from = y_len - (shift - 1);
-        x_till = x_from + x_len - 1;
-        x_(x_from:x_till) = x;
-    end
-    
-    % get diff vector
-    rms_vector(n) = rms(x_ - y_);
-    lag_vector(n) = x_from - y_from;
+[min_len, shorter] = min([x_len, y_len]);
+max_len = max([x_len, y_len]);
+n_frames = (max_len - min_len) + 1;
+
+if 1 == shorter
+    x_shift = x;
+    y_hat = y;
+else
+    x_shift = y;
+    y_hat = x;
 end
 
-% find location where correlation is the greatest
+rms_vector = zeros(n_frames, 1);
+lag_vector = zeros(n_frames, 1);
+
+parfor n = 1:n_frames
+    % shift
+    y_shift = y_hat(n:n+min_len-1);
+    
+    % get diff vector
+    rms_vector(n) = rms(x_shift - y_shift);
+    lag_vector(n) = n - 1;
+end
+
 [~, idx] = min(rms_vector);
 lag = lag_vector(idx);
+
+% plot(rms_vector);
+% title(['lag = ' num2str(lag)]);
+% drawnow;
