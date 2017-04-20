@@ -1,5 +1,14 @@
-function [lag] = get_lag(x, y)
+function [lag] = get_lag(x, y, should_normalize)
     
+resample_factor = 1;
+% x = resample(x, 1, resample_factor);
+% y = resample(y, 1, resample_factor);
+
+% check if we should normalize
+if nargin < 3
+    should_normalize = false;
+end
+
 % check that x and y are mono
 if 1 ~= min(size(x)) || 1 ~= min(size(y))
     error('x and y must be either scalars or vectors');
@@ -27,18 +36,27 @@ end
 rms_vector = zeros(n_frames, 1);
 lag_vector = zeros(n_frames, 1);
 
-parfor n = 1:n_frames
+% normalization
+x_norm = max(abs(x_shift));
+
+parfor n = 1:n_frames 
     % shift
-    y_shift = y_hat(n:n+min_len-1);
+    z = n - 1;
+    y_shift = y_hat(n:z+min_len);
     
     % get diff vector
-    rms_vector(n) = rms(x_shift - y_shift);
-    lag_vector(n) = n - 1;
+    if should_normalize
+        rms_vector(n) = rms(x_shift ./ x_norm - y_shift ./ max(abs(y_shift)));
+    else
+        rms_vector(n) = rms(x_shift - y_shift);
+    end
+    
+    lag_vector(n) = z;
 end
 
 [~, idx] = min(rms_vector);
-lag = lag_vector(idx);
+lag = lag_vector(idx) * resample_factor;
 
-% plot(rms_vector);
-% title(['lag = ' num2str(lag)]);
-% drawnow;
+plot(rms_vector);
+title(['lag = ' num2str(lag)]);
+drawnow;
