@@ -1,11 +1,12 @@
-function [lag] = get_lag(x, y, should_normalize)
+function [lag] = get_lag(x, y, resample_factor, should_normalize)
     
-resample_factor = 1;
-% x = resample(x, 1, resample_factor);
-% y = resample(y, 1, resample_factor);
+if (resample_factor ~= 1)
+    x = resample(x, 1, resample_factor);
+    y = resample(y, 1, resample_factor);
+end
 
 % check if we should normalize
-if nargin < 3
+if nargin < 4
     should_normalize = false;
 end
 
@@ -39,7 +40,7 @@ lag_vector = zeros(n_frames, 1);
 % normalization
 x_norm = max(abs(x_shift));
 
-parfor n = 1:n_frames 
+for n = 1:n_frames 
     % shift
     z = n - 1;
     y_shift = y_hat(n:z+min_len);

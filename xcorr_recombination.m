@@ -5,7 +5,7 @@ clear all;
 addpath(genpath('.'));
 
 %% user parameters
-win_len = 8;                 % window size
+win_len = 44100;                 % window size
 overlap = 2;                    % overlap scalar
 
 % target_file = 'voice1.wav';     % the sound we're trying to recreate
@@ -22,8 +22,8 @@ target = sum(target, 2);
 source = sum(source, 2); 
 
 % take only the first few seconds
-target = target(fs*20:fs*21);
-source = source(fs*20:fs*21);
+target = target(fs*20:fs*25);
+source = source(fs*20:fs*25);
 
 win = hanning(win_len);
 
@@ -45,7 +45,7 @@ for n = 1:n_windows
     t_grain = target(t_from:t_till);
     
     % find out it's lag relative to source
-    lag = get_lag(t_grain, source, true);
+    lag = get_lag(t_grain, source, 1, true);
     
     % get source grain from lag
     s_from = lag+1;
